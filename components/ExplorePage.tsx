@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { Sidebar } from "@/components/Sidebar";
 import { Card } from "@/components/ui/card";
@@ -139,7 +139,7 @@ export const ExplorePage = () => {
   
   
   return (
-    <div>
+    <Suspense>
       {isOffline && <div className="bg-destructive w-full h-4 p-3 flex justify-center items-center text-destructive-foreground text-sm">You seems to be offline.</div>}
       <SearchBar findCoord={findCoord}/>
       <div className="grid md:grid-cols-4 md:grid-rows-1 grid-rows-2 gap-4 m-4 max-w-full">
@@ -166,6 +166,6 @@ export const ExplorePage = () => {
           </Card>
         </main>
       </div>
-    </div>
+    </Suspense>
   );
 };
