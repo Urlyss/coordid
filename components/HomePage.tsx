@@ -6,10 +6,10 @@ import Link from "next/link";
 
 const HomePage = () => {
   return (
-    <div className="p-6 space-y-32">
-      <section className="h-[50dvh] grid grid-cols-2 bg-secondary px-60">
-        <div className="col-span-1 space-y-4 flex flex-col justify-center mx-10">
-          <h1 className="text-5xl">Empowering Africa, One ID at a Time</h1>
+    <div className="p-6 gap-32 flex flex-col">
+      <section className="h-fit flex md:flex-row flex-col gap-10 bg-secondary px-4 py-20 w-full">
+        <div className="flex-1 space-y-4 flex flex-col justify-center">
+          <h1 className="text-4xl">Empowering Africa, One ID at a Time</h1>
           <h2 className="text-xl leading-relaxed">
             {`CoordID is Africa's official digital property addressing system which
         covers every inch of the continent and ensures that all locations are
@@ -24,7 +24,7 @@ const HomePage = () => {
             </Link>
           </div>
         </div>
-        <div className="col-span-1 p-10">
+        <div className="flex-1">
         <Image
               alt="screen capture of the app"
               src={"/screencapture2.png"}
@@ -32,8 +32,8 @@ const HomePage = () => {
               height={600}
             />
         </div>
-      </section>
-      <section className="space-y-4 px-60">
+  </section>
+      <section className="space-y-4 ">
         <h1 className="text-3xl">The Identity Crisis in Africa</h1>
         <h2 className="text-xl leading-relaxed">
           {`In many African countries, the lack of a comprehensive postal code
@@ -47,7 +47,7 @@ const HomePage = () => {
         take control of their futures.`}
         </h2>
       </section>
-      <section className="space-y-4 px-60">
+      <section className="space-y-4 ">
         <h1 className="text-3xl">
           Introducing CoordID: Your Key to a Unique ID
         </h1>
@@ -79,8 +79,8 @@ const HomePage = () => {
             </li>
           </ul>
         </h2>
-        <div className="flex gap-4 justify-around items-center">
-          <div className="w-[600px] bg-[#ebece7] text-[#666] p-14">
+        <div className="flex gap-4 justify-center">
+          <div className="w-[600px] bg-[#ebece7] text-[#666] text-sm">
             Bank Account creation and loan access for small businesses at the
             bank has never been easy
             <Image
@@ -90,7 +90,7 @@ const HomePage = () => {
               height={600}
             />
           </div>
-          <div className="w-[600px] bg-[#45a3a3] text-white p-14">
+          <div className="w-[600px] bg-[#45a3a3] text-white text-sm">
             Door to Door Delivery Made Simple
             <Image
               alt="benefit 2 of using coord"
@@ -101,7 +101,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-      <section className="space-y-4 px-60">
+      <section className="space-y-4 ">
         <h1 className="text-3xl">Unlock the Power of a Unique ID</h1>
         <h2 className="text-xl leading-relaxed">
           {`Don't let the lack of a postal code system hold you back. Register for your unique ID today and unlock a world of opportunities.`}
