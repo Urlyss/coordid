@@ -178,18 +178,11 @@ export function getUUID(
 export function getGridCellFromUUID(geoJsonData: FeatureCollection, uuid: string) {
   try {
     // Split the UUID into its components
-    const [countryCode, level3Id, gridId] = uuid.split("-");
-
-    // Log the UUID components for debugging purposes
-    console.log(
-      "countryCode:",
-      countryCode,
-      "level3Id:",
-      level3Id,
-      "gridId:",
-      gridId
-    );
-
+     const uuidPart = uuid.split("-");
+     const countryCode = uuidPart[0];
+     const level3Id = parseInt(uuidPart[1]);
+     const gridId = parseInt(uuidPart[2])
+    
     // Retrieve the Level 3 zone feature from the GeoJSON data
     const level3Zone: Feature = geoJsonData.features[level3Id];
 
@@ -226,7 +219,7 @@ export async function getCountryMap(countryCode: string) {
     const anonymousUser = Realm.Credentials.anonymous();
     app.logIn(anonymousUser);
   }
-  //const client = new MongoClient(uri);
+  
   try {
     let geoJsonMap = null;
     if (app?.currentUser) {
@@ -236,12 +229,12 @@ export async function getCountryMap(countryCode: string) {
       const country = await countries.findOne({ code:countryCode })
       if(country){
         geoJsonMap = country.map
+        return { geoJsonMap };
       }
-      if (!geoJsonMap) {
+      else{
         console.log("No GeoJSON data found for the specified country code.");
         return null;
       }
-      return { geoJsonMap };
     }
   
   } catch (error) {

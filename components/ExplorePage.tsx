@@ -142,17 +142,17 @@ export const ExplorePage = () => {
     <Suspense>
       {isOffline && <div className="bg-destructive w-full h-4 p-3 flex justify-center items-center text-destructive-foreground text-sm">You seems to be offline.</div>}
       <SearchBar findCoord={findCoord}/>
-      <div className="grid md:grid-cols-4 md:grid-rows-1 grid-rows-2 gap-4 m-4 max-w-full">
-        <aside className="h-full col-span-1 w-full">
+      <div className="flex md:flex-row flex-col-reverse gap-4 m-4 max-w-full h-dvh">
+        <aside className="h-full flex-[20%] w-full">
           <Sidebar
-            className="h-full p-2"
+            className="h-full p-2 overflow-auto"
             uuid={uuid}
             latlng={displayLatlng}
             address={addressDetail}
           />
         </aside>
-        <main className="w-full col-span-3">
-          <Card className={"h-full"} id="map">
+        <main className="w-full flex-[80%] h-full">
+          <Card className={"h-full w-full"} id="map">
             {Map ? (
               <Map
                 setCountry={updateCountry}

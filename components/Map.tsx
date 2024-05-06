@@ -34,35 +34,43 @@ function LocationMarker({
   });
 
   useEffect(() => {
-    L.control
-      .locate({
-        position: "bottomright",
-        flyTo: true,
-        drawCircle: false,
-        drawMarker: false,
-        initialZoomLevel: map.getMaxZoom(),
-        icon: "locate",
-        iconLoading: "loading",
-        iconElementTag: "div",
-        strings: { title: "Find My Coord" },
-      })
-      .addTo(map);
+    try {
+      L.control
+        .locate({
+          position: "bottomright",
+          flyTo: true,
+          drawCircle: false,
+          drawMarker: false,
+          initialZoomLevel: map.getMaxZoom(),
+          icon: "locate",
+          iconLoading: "loading",
+          iconElementTag: "div",
+          strings: { title: "Find My Coord" },
+        })
+        .addTo(map);
+    } catch (error) {
+      console.error(error);
+    }
     map.locate({ setView: true });
   }, []);
 
   useEffect(() => {
     const layer = L.geoJSON(boundary);
     let center = null;
-    if (boundary) {
-      center = layer.getBounds().getCenter();
-      map.panTo(center);
-      layer.addTo(map);
-      if (customPosition) {
-        setPosition(new LatLng(center.lat, center.lng));
+    try {
+      if (boundary) {
+        center = layer.getBounds().getCenter();
+        map.panTo(center);
+        layer.addTo(map);
+        if (customPosition) {
+          setPosition(new LatLng(center.lat, center.lng));
+        }
+        map.flyToBounds(layer.getBounds());
       }
-      map.flyToBounds(layer.getBounds());
-      
+    } catch (error) {
+      console.error(error);
     }
+
     return () => {
       map.removeLayer(layer);
     };
@@ -102,7 +110,7 @@ const Map = ({
   return (
     isMounted && (
       <>
-        <MapContainer zoom={18} className="h-full z-10" >
+        <MapContainer zoom={18} className="h-full z-10">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
