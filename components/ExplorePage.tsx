@@ -142,7 +142,7 @@ export const ExplorePage = () => {
     <Suspense>
       {isOffline && <div className="bg-destructive w-full h-4 p-3 flex justify-center items-center text-destructive-foreground text-sm">You seems to be offline.</div>}
       <SearchBar findCoord={findCoord}/>
-      <div className="flex md:flex-row flex-col-reverse gap-4 m-4 max-w-full h-dvh">
+      <div className="flex md:flex-row flex-col-reverse gap-4 m-4 max-w-full md:h-[70dvh] h-dvh">
         <aside className="h-full flex-[20%] w-full">
           <Sidebar
             className="h-full p-2 overflow-auto"

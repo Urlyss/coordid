@@ -217,7 +217,7 @@ export async function getCountryMap(countryCode: string) {
   const app = Realm.getApp(id)
   if (app && !app.currentUser) {
     const anonymousUser = Realm.Credentials.anonymous();
-    app.logIn(anonymousUser);
+    await app.logIn(anonymousUser);
   }
   
   try {

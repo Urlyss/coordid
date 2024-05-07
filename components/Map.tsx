@@ -77,11 +77,15 @@ function LocationMarker({
   }, [boundary]);
 
   const geoLocate = (e: LocationEvent | LeafletMouseEvent) => {
-    const geolocation = countryCoder.feature([e.latlng.lng, e.latlng.lat]);
+    try {
+      const geolocation = countryCoder.feature([e.latlng.lng, e.latlng.lat]);
     setCountry(geolocation?.properties.iso1A3 || "");
     setPosition(e.latlng);
     updateLatlng([e.latlng.lng, e.latlng.lat]);
     map.flyTo(e.latlng, map.getMaxZoom());
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   return !position ? null : (
