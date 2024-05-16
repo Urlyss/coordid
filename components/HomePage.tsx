@@ -7,7 +7,7 @@ import Link from "next/link";
 const HomePage = () => {
   return (
     <div className="p-6 gap-32 flex flex-col">
-      <section className="h-fit flex md:flex-row flex-col gap-10 bg-secondary px-4 py-20 w-full">
+      <section className="h-fit flex lg:flex-row flex-col gap-10 bg-secondary px-4 py-20 w-full">
         <div className="flex-1 space-y-4 flex flex-col justify-center">
           <h1 className="text-4xl">Empowering Africa, One ID at a Time</h1>
           <h2 className="text-xl leading-relaxed">

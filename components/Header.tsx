@@ -111,7 +111,7 @@ export const Header = () => {
             <a
               target="_blank"
               rel="noreferrer"
-              href="https://github.com/urlyss"
+              href="https://github.com/urlyss/coordid"
             >
               <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 py-2 w-9 px-0">
                 <svg viewBox="0 0 438.549 438.549" className="h-4 w-4">
