@@ -4,6 +4,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJsonProperties, Geometry, Feature } from "geojson";
 import mapboxgl, { LngLat, LngLatLike, Map, MapMouseEvent } from "mapbox-gl";
 import * as countryCoder from "@rapideditor/country-coder";
+import { useToast } from "./ui/use-toast";
 
 const CustomMap = ({
   updateLatlng,
@@ -28,39 +29,46 @@ const CustomMap = ({
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
-    //@ts-ignore
-    map.current = new mapboxgl.Map({
-      //@ts-ignore
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      zoom: zoom,
-    });
-    const geolocate = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      showUserLocation: false,
-    });
-    //@ts-ignore
-    map.current.addControl(geolocate);
-    //@ts-ignore
-    map.current.addControl(new mapboxgl.NavigationControl({ showZoom: true }));
-    geolocate.on("geolocate", (data) => {
-      if (data) {
-        geoLocateCallback(data as GeolocationPosition);
-      }
-    });
-    
-    map.current &&
-    //@ts-ignore
-      map.current.on("load", () => {
-        geolocate.trigger();
-      });
-      map.current &&
-      //@ts-ignore
-      map.current.on("click", function (ev: MapMouseEvent) {
-        geoLocateCallback(ev.lngLat);
-      });
+    try {
+        //@ts-ignore
+        map.current = new mapboxgl.Map({
+            //@ts-ignore
+            container: mapContainer.current,
+            style: "mapbox://styles/mapbox/streets-v12",
+            zoom: zoom,
+          });
+
+          const geolocate = new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true,
+            },
+            showUserLocation: false,
+          });
+          const zoomCtrl = new mapboxgl.NavigationControl({ showZoom: true })
+          //@ts-ignore
+          map.current.addControl(geolocate);
+          //@ts-ignore
+          map.current.addControl(zoomCtrl);
+          geolocate.on("geolocate", (data) => {
+            if (data) {
+              geoLocateCallback(data as GeolocationPosition);
+            }
+          });
+          
+          map.current &&
+          //@ts-ignore
+            map.current.on("load", () => {
+              geolocate.trigger();
+            });
+            map.current &&
+            //@ts-ignore
+            map.current.on("click", function (ev: MapMouseEvent) {
+              geoLocateCallback(ev.lngLat);
+            });
+
+    } catch (error) {
+        console.error(error)
+    }
   });
 
   const geoLocateCallback = (e: GeolocationPosition | LngLat) => {
