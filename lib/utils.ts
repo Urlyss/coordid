@@ -1,6 +1,7 @@
 'use client'
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+//@ts-ignore
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection } from "geojson";
 import { MongoClient } from "mongodb";
@@ -58,6 +59,7 @@ function createGrid(coordinates: Feature, cellSide: number) {
     const grid: Feature[] = [];
 
     // Create a Turf.js polygon from the provided coordinates
+    //@ts-ignore
     const area = turf.polygon(coordinates.geometry.coordinates[0]);
 
     // Get the bounding box of the polygon
@@ -210,17 +212,18 @@ export function getGridCellFromUUID(geoJsonData: FeatureCollection, uuid: string
 export async function getCountryMap(countryCode: string) {
   const uri = process.env.NEXT_PUBLIC_MONGO_URI;
   const id = process.env.NEXT_PUBLIC_APP_ID;
-  if (!uri || !id) {
-    throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+  const apiKey = process.env.NEXT_PUBLIC_MONGO_API_KEY;
+  if (!uri || !id || !apiKey) {
+    throw new Error('Invalid/Missing environment variable');
   }
   
   const app = Realm.getApp(id)
-  if (app && !app.currentUser) {
-    const anonymousUser = Realm.Credentials.anonymous();
-    await app.logIn(anonymousUser);
-  }
   
   try {
+    if (app && !app.currentUser) {
+      const credentials = Realm.Credentials.apiKey(apiKey);
+      await app.logIn(credentials);
+    }
     let geoJsonMap = null;
     if (app?.currentUser) {
       const mongo = app?.currentUser?.mongoClient("mongodb-atlas");
@@ -233,7 +236,7 @@ export async function getCountryMap(countryCode: string) {
       }
       else{
         console.log("No GeoJSON data found for the specified country code.");
-        return null;
+        return {geoJsonMap:null};
       }
     }
   

@@ -6,6 +6,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+import "leaflet-spin/leaflet.spin"
 import L, { LeafletMouseEvent, LocationEvent } from "leaflet";
 import { LatLng } from "leaflet";
 import { Feature, GeoJsonProperties, Geometry } from "geojson";
@@ -55,6 +56,10 @@ function LocationMarker({
   }, []);
 
   useEffect(() => {
+    //@ts-ignore
+    map.spin(false);
+    //@ts-ignore
+    map.spin(true);
     const layer = L.geoJSON(boundary);
     let center = null;
     try {
@@ -66,6 +71,10 @@ function LocationMarker({
           setPosition(new LatLng(center.lat, center.lng));
         }
         map.flyToBounds(layer.getBounds());
+        setTimeout(() => {
+          //@ts-ignore
+          map.spin(false);
+        }, 3000);
       }
     } catch (error) {
       console.error(error);
