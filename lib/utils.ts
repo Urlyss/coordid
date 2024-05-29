@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge";
 //@ts-ignore
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection } from "geojson";
-import { MongoClient } from "mongodb";
 import * as Realm from "realm-web";
 
 export function cn(...inputs: ClassValue[]) {
@@ -209,21 +208,10 @@ export function getGridCellFromUUID(geoJsonData: FeatureCollection, uuid: string
  * @param {string} countryCode - The country code to filter the Level 3 boundaries.
  * @returns {object|null} geoJsonData - The GeoJSON data containing the Level 3 boundaries.
  */
-export async function getCountryMap(countryCode: string) {
-  const uri = process.env.NEXT_PUBLIC_MONGO_URI;
-  const id = process.env.NEXT_PUBLIC_APP_ID;
-  const apiKey = process.env.NEXT_PUBLIC_MONGO_API_KEY;
-  if (!uri || !id || !apiKey) {
-    throw new Error('Invalid/Missing environment variable');
-  }
+export async function getCountryMap(countryCode: string,app:Realm.App) {
   
-  const app = Realm.getApp(id)
   
   try {
-    if (app && !app.currentUser) {
-      const credentials = Realm.Credentials.apiKey(apiKey);
-      await app.logIn(credentials);
-    }
     let geoJsonMap = null;
     if (app?.currentUser) {
       const mongo = app?.currentUser?.mongoClient("mongodb-atlas");
@@ -236,7 +224,7 @@ export async function getCountryMap(countryCode: string) {
       }
       else{
         console.log("No GeoJSON data found for the specified country code.");
-        return {geoJsonMap:null};
+        return null;
       }
     }
   

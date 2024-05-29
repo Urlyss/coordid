@@ -17,7 +17,7 @@ import { ToastAction } from "./ui/toast";
 //@ts-ignore
 import * as turf from "@turf/turf";
 import { useIsOnline } from 'react-use-is-online';
-import CustomMap from "./CustomMap";
+import useDatabase from '../lib/useDatabase';
 
 
 
@@ -26,8 +26,8 @@ export const ExplorePage = () => {
   const { toast } = useToast();
   const { isOnline, isOffline, error } = useIsOnline();
 
-  const Map = React.useMemo(
-    () => dynamic(() => import("@/components/LeafletMap"), { ssr: false }),
+  const CustomMap = React.useMemo(
+    () => dynamic(() => import("./CustomMap"), { ssr: false }),
     []
   );
   const [uuid, updateUuid] = useImmer("");
@@ -46,7 +46,7 @@ export const ExplorePage = () => {
   const [gridDetail, setGridDetail] = useImmer<
     Feature<Geometry, GeoJsonProperties> | undefined
   >(undefined);
-
+  const db = useDatabase();
 
   useEffect(() => {
     if (latlng[0] != 0 && latlng[1] != 0) {
@@ -63,22 +63,22 @@ export const ExplorePage = () => {
     setTimeout(() => {
       updateLoadingMap(true)
     }, 3000);
-    const countryMap = await getCountryMap(country);
-    if(countryMap == null ) {
-      updateLoadingMap(false)
-      return toast({
+    
+    if(db == null ) {
+      toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: "There was a problem with your request.",
         action: (
-          <ToastAction altText="Try again" onClick={() => window.location.reload()}>
+          <ToastAction altText="Try again" onClick={() => findUUID()}>
             Try again
           </ToastAction>
         ),
         duration:60000
       });
     }else{
-      if(countryMap?.geoJsonMap == null ) {
+      const countryMap = await getCountryMap(country,db);
+      if(countryMap == null ) {
     updateLoadingMap(false)
         return toast({
           variant: "destructive",
@@ -126,7 +126,19 @@ export const ExplorePage = () => {
     setGridDetail(undefined);
     const [country, boundaryId, gridId] = uuidCoord.split("-");
     if (country && boundaryId && gridId) {
-      const countryMap = await getCountryMap(country);
+    if(db == null ) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your request.",
+          action: (
+            <ToastAction altText="Try again" onClick={() => findUUID()}>
+              Try again
+            </ToastAction>
+          ),
+        });
+      }else{
+      const countryMap = await getCountryMap(country,db);
       if (countryMap?.geoJsonMap != null) {
         const grid = getGridCellFromUUID(countryMap.geoJsonMap, uuidCoord);
         if (grid && grid?.level3Zone && grid?.gridCell) {
@@ -160,6 +172,7 @@ export const ExplorePage = () => {
           description: "Your country is not supported yet.",
         });
       }
+    }
     } else {
     updateLoadingMap(false)
       return toast({
@@ -168,6 +181,7 @@ export const ExplorePage = () => {
         description: "Wrong Coord id.",
       });
     }
+  
   };
   
   
