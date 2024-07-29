@@ -23,8 +23,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "./ui/drawer";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
+  const menus = [{label:"Home",href:"/"},{label:"Explore",href:"/map"}]
+  const pathname = usePathname()
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
@@ -50,24 +53,19 @@ export const Header = () => {
               <DrawerDescription>
                 <NavigationMenu>
                   <NavigationMenuList className="flex flex-col items-center gap-4 text-sm">
-                    <NavigationMenuItem>
-                      <Link href="/" legacyBehavior passHref>
-                        <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
-                        >
-                          Home
-                        </NavigationMenuLink>
-                      </Link>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                      <Link href="/map" legacyBehavior passHref>
-                        <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
-                        >
-                          Explore
-                        </NavigationMenuLink>
-                      </Link>
-                    </NavigationMenuItem>
+                    {menus.map((men,id)=>{
+                      const isActive = men.href === pathname;
+                      return (<NavigationMenuItem>
+                        <Link href={men.href} legacyBehavior passHref>
+                          <NavigationMenuLink
+                          active={isActive}
+                            className={navigationMenuTriggerStyle()}
+                          >
+                            {men.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>)
+                    })}
                   </NavigationMenuList>
                 </NavigationMenu>
               </DrawerDescription>
@@ -84,24 +82,19 @@ export const Header = () => {
           <nav className="flex items-center gap-4 text-sm lg:gap-6">
             <NavigationMenu>
               <NavigationMenuList>
-                <NavigationMenuItem>
-                  <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Home
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/map" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Explore
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
+              {menus.map((men,id)=>{
+                      const isActive = men.href === pathname;
+                      return (<NavigationMenuItem>
+                        <Link href={men.href} legacyBehavior passHref>
+                          <NavigationMenuLink
+                          active={isActive}
+                            className={navigationMenuTriggerStyle()}
+                          >
+                            {men.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>)
+                    })}
               </NavigationMenuList>
             </NavigationMenu>
           </nav>

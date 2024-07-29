@@ -2,9 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { GeoJsonProperties, Geometry, Feature } from "geojson";
-import mapboxgl, { LngLat, LngLatLike, Map, MapMouseEvent } from "mapbox-gl";
+import mapboxgl, { LngLat, LngLatLike,  MapMouseEvent } from "mapbox-gl";
 import * as countryCoder from "@rapideditor/country-coder";
-import { useToast } from "./ui/use-toast";
 
 const CustomMap = ({
   updateLatlng,
@@ -176,7 +175,7 @@ const CustomMap = ({
 
   return (
     <>
-      <div ref={mapContainer} className="map-container h-full z-10" />
+      <div ref={mapContainer} className="map-container lg:h-full z-10 min-h-[60dvh]" />
       {loading && (
         <div
           id="loader"

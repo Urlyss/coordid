@@ -1,11 +1,10 @@
 "use client";
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import React, { Suspense,  useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { Sidebar } from "@/components/Sidebar";
 import { Card } from "@/components/ui/card";
 import dynamic from "next/dynamic";
 import { useImmer } from "use-immer";
-import { getCountryMap, getGridCellFromUUID, getUUID } from "@/lib/utils";
 import {
   Feature,
   FeatureCollection,
@@ -17,12 +16,26 @@ import { ToastAction } from "./ui/toast";
 //@ts-ignore
 import * as turf from "@turf/turf";
 import { useIsOnline } from 'react-use-is-online';
-import useDatabase from '../lib/useDatabase';
 
 
 
 
-export const ExplorePage = () => {
+export const ExplorePage = ({
+  getCountryMap,
+  getUUID,
+  getGridCellFromUUID
+}:{
+  getCountryMap:(countryCode: string)=> Promise<{geoJsonMap: any;} | null | undefined>
+  getUUID:(geoJsonData: FeatureCollection, countryCode: string, coordinates:number[])=> Promise<{
+    uuid: string;
+    level3Boundary: {id: number;feature: Feature<Geometry, GeoJsonProperties>;};
+    gridBoundary: Feature;
+} | null>
+  getGridCellFromUUID:(geoJsonData: FeatureCollection, uuid: string)=> Promise<{
+    gridCell: Feature<Geometry, GeoJsonProperties>;
+    level3Zone: Feature<Geometry, GeoJsonProperties>;
+} | null>
+}) => {
   const { toast } = useToast();
   const { isOnline, isOffline, error } = useIsOnline();
 
@@ -45,8 +58,7 @@ export const ExplorePage = () => {
   >(undefined);
   const [gridDetail, setGridDetail] = useImmer<
     Feature<Geometry, GeoJsonProperties> | undefined
-  >(undefined);
-  const db = useDatabase();
+  >(undefined); 
 
   useEffect(() => {
     if (latlng[0] != 0 && latlng[1] != 0) {
@@ -64,21 +76,21 @@ export const ExplorePage = () => {
       updateLoadingMap(true)
     }, 3000);
     
-    if(db == null ) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-        action: (
-          <ToastAction altText="Try again" onClick={() => findUUID()}>
-            Try again
-          </ToastAction>
-        ),
-        duration:60000
-      });
-    }else{
-      const countryMap = await getCountryMap(country,db);
-      if(countryMap == null ) {
+      const countryMap = await getCountryMap(country);
+      if(countryMap == null){
+          return toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem with your request.",
+            action: (
+              <ToastAction altText="Try again" onClick={() => findUUID()}>
+                Try again
+              </ToastAction>
+            ),
+            duration:60000
+          });
+      }
+      if(!countryMap ) {
     updateLoadingMap(false)
         return toast({
           variant: "destructive",
@@ -87,7 +99,7 @@ export const ExplorePage = () => {
         });
       }else {
         const geoJSON = countryMap.geoJsonMap as unknown;
-        const uuid = getUUID(
+        const uuid = await getUUID(
           geoJSON as FeatureCollection<Geometry, GeoJsonProperties>,
           country,
           latlng
@@ -113,7 +125,6 @@ export const ExplorePage = () => {
             duration:60000
           });
         }
-      } 
     }
   };
 
@@ -126,8 +137,9 @@ export const ExplorePage = () => {
     setGridDetail(undefined);
     const [country, boundaryId, gridId] = uuidCoord.split("-");
     if (country && boundaryId && gridId) {
-    if(db == null ) {
-        toast({
+      const countryMap = await getCountryMap(country);
+      if(countryMap == null){
+        return toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: "There was a problem with your request.",
@@ -136,11 +148,19 @@ export const ExplorePage = () => {
               Try again
             </ToastAction>
           ),
+          duration:60000
         });
-      }else{
-      const countryMap = await getCountryMap(country,db);
-      if (countryMap?.geoJsonMap != null) {
-        const grid = getGridCellFromUUID(countryMap.geoJsonMap, uuidCoord);
+    }
+    if(!countryMap ) {
+      updateLoadingMap(false)
+        return toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Your country is not supported yet.",
+        });
+    }
+      else{
+        const grid = await getGridCellFromUUID(countryMap.geoJsonMap, uuidCoord);
         if (grid && grid?.level3Zone && grid?.gridCell) {
           updateUuid(uuidCoord);
           setAddressDetail({ feature: grid?.level3Zone });
@@ -164,15 +184,7 @@ export const ExplorePage = () => {
             ),
           });
         }
-      } else {
-    updateLoadingMap(false)
-        return toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "Your country is not supported yet.",
-        });
-      }
-    }
+      } 
     } else {
     updateLoadingMap(false)
       return toast({
@@ -181,7 +193,6 @@ export const ExplorePage = () => {
         description: "Wrong Coord id.",
       });
     }
-  
   };
   
   
@@ -191,8 +202,8 @@ export const ExplorePage = () => {
     <Suspense>
       {isOffline && <div className="bg-destructive w-full h-4 p-3 flex justify-center items-center text-destructive-foreground text-sm">You seems to be offline.</div>}
       <SearchBar findCoord={findCoord}/>
-      <div className="flex lg:flex-row flex-col-reverse gap-4 m-4 max-w-full lg:h-[70dvh] h-dvh">
-        <aside className="h-full flex-[20%] w-full">
+      <div className="flex lg:flex-row flex-col-reverse gap-4 m-4 max-w-full lg:h-[70dvh]">
+        <aside className="h-full flex-1 w-full">
           <Sidebar
             className="h-full p-2 overflow-auto"
             uuid={uuid}
@@ -200,7 +211,7 @@ export const ExplorePage = () => {
             address={addressDetail}
           />
         </aside>
-        <main className="w-full flex-[80%] h-full">
+        <main className="w-full flex-[3]">
           <Card className={"h-full w-full relative"} id="map">
             {CustomMap ? (
               <CustomMap

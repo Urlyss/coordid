@@ -1,10 +1,9 @@
-'use client'
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 //@ts-ignore
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection } from "geojson";
-import * as Realm from "realm-web";
+import { Db} from "mongodb";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -206,17 +205,13 @@ export function getGridCellFromUUID(geoJsonData: FeatureCollection, uuid: string
  * The main function that orchestrates the execution of the other functions.
  *
  * @param {string} countryCode - The country code to filter the Level 3 boundaries.
- * @returns {object|null} geoJsonData - The GeoJSON data containing the Level 3 boundaries.
+ * @returns {object|null|undefined} geoJsonData - The GeoJSON data containing the Level 3 boundaries.
  */
-export async function getCountryMap(countryCode: string,app:Realm.App) {
-  
-  
+export async function getCountryMap(countryCode: string,client:Db|null) {
   try {
     let geoJsonMap = null;
-    if (app?.currentUser) {
-      const mongo = app?.currentUser?.mongoClient("mongodb-atlas");
-      const database = mongo.db("coord")
-      const countries = database.collection("countries");
+    if (client != null) {
+      const countries = client.collection("countries");
       const country = await countries.findOne({ code:countryCode })
       if(country){
         geoJsonMap = country.map
@@ -224,10 +219,11 @@ export async function getCountryMap(countryCode: string,app:Realm.App) {
       }
       else{
         console.log("No GeoJSON data found for the specified country code.");
-        return null;
+        return undefined;
       }
+    }else{
+      return null
     }
-  
   } catch (error) {
     // Handle any exceptions that may occur during the function execution
     console.error("Error in main:", error);
