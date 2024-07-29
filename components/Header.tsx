@@ -55,7 +55,7 @@ export const Header = () => {
                   <NavigationMenuList className="flex flex-col items-center gap-4 text-sm">
                     {menus.map((men,id)=>{
                       const isActive = men.href === pathname;
-                      return (<NavigationMenuItem>
+                      return (<NavigationMenuItem key={id}>
                         <Link href={men.href} legacyBehavior passHref>
                           <NavigationMenuLink
                           active={isActive}
@@ -84,7 +84,7 @@ export const Header = () => {
               <NavigationMenuList>
               {menus.map((men,id)=>{
                       const isActive = men.href === pathname;
-                      return (<NavigationMenuItem>
+                      return (<NavigationMenuItem key={id}>
                         <Link href={men.href} legacyBehavior passHref>
                           <NavigationMenuLink
                           active={isActive}
