@@ -1,23 +1,24 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 
-
 export async function GET(
     request: Request,
     { params }: { params: { code: string } }
 ) {
-        // List of allowed origins
-    const allowedOrigins = [process.env.PRODUCTION_URL || "http://localhost:3000"];
-    console.log(allowedOrigins)
-
-    // Function to check if the origin is allowed
-    function isAllowedOrigin(origin: string | null): boolean {
-    if (!origin) return false;
-    return allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin));
-    }
+         // Get the origin and referer
+  const referer = request.headers.get('referer')
+  const origin = request.headers.get('origin')
+  const host = request.headers.get('host')
+  
+  // List of allowed origins that don't need API key
+  const sameOriginSources = [host]
+  // Check if request is from the same origin
+  const isSameOrigin = sameOriginSources.some(url => 
+    url && (referer?.includes(url) || origin?.includes(url))
+  )
 
     try {
-        if (!isAllowedOrigin(request.headers.get('origin'))) {
+        if (!isSameOrigin) {
     return new NextResponse(
       JSON.stringify({
         success: false,
