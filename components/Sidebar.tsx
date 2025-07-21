@@ -16,10 +16,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { useToast } from "./ui/use-toast";
 import { useState } from "react";
 import { LucideCopy, LucideCopyCheck } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { toast } from "sonner";
 
 type CardProps = React.ComponentProps<typeof Card>;
 
@@ -39,15 +39,11 @@ export function Sidebar({
       }
     | undefined;
 }) {
-  const { toast } = useToast();
   const [currentIcon,setCurrentIcon] = useState(<LucideCopy className="h-4 w-4" />)
   const onCopy = (txt: string) => {
     setCurrentIcon(<LucideCopyCheck className="h-4 w-4" />)
     navigator.clipboard.writeText(txt);
-    toast({
-      description: "Your ID has been copied.",
-      style:{backgroundColor:"rgba(0,255,0,0.2)"},
-    });
+    toast.success("Your ID has been copied.")
     setTimeout(() => {
       setCurrentIcon(<LucideCopy className="h-4 w-4" />)
     }, 3000);

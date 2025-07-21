@@ -5,20 +5,22 @@ import { GeoJsonProperties, Geometry, Feature } from "geojson";
 import mapboxgl, { LngLat, LngLatLike,  MapMouseEvent } from "mapbox-gl";
 import * as countryCoder from "@rapideditor/country-coder";
 
-const CustomMap = ({
+interface CustomMapProps {
+  setCountry: (country: string) => void;
+  updateLatlng: (latlng: number[]) => void;
+  boundary: Feature<Geometry, GeoJsonProperties> | undefined;
+  customPosition: number[] | undefined;
+  searchMode: boolean;
+  loading: boolean;
+}
+
+const CustomMap: React.FC<CustomMapProps> = ({
   updateLatlng,
   boundary,
   setCountry,
   customPosition = undefined,
   searchMode = false,
   loading = false
-}: {
-  setCountry: (arg: string) => void;
-  updateLatlng: (arg: number[]) => void;
-  boundary: Feature<Geometry, GeoJsonProperties> | undefined;
-  customPosition: number[] | undefined;
-  searchMode: boolean;
-  loading: boolean;
 }) => {
   mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
   const mapContainer = useRef(null);

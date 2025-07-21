@@ -3,7 +3,6 @@ import { twMerge } from "tailwind-merge";
 //@ts-ignore
 import * as turf from "@turf/turf";
 import { Feature, FeatureCollection } from "geojson";
-import { Db} from "mongodb";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -207,23 +206,19 @@ export function getGridCellFromUUID(geoJsonData: FeatureCollection, uuid: string
  * @param {string} countryCode - The country code to filter the Level 3 boundaries.
  * @returns {object|null|undefined} geoJsonData - The GeoJSON data containing the Level 3 boundaries.
  */
-export async function getCountryMap(countryCode: string,client:Db|null) {
+export async function getCountryMap(countryCode: string) {
   try {
-    let geoJsonMap = null;
-    if (client != null) {
-      const countries = client.collection("countries");
-      const country = await countries.findOne({ code:countryCode })
-      if(country){
-        geoJsonMap = country.map
-        return { geoJsonMap };
-      }
-      else{
-        console.log("No GeoJSON data found for the specified country code.");
+    const response = await fetch(`/api/maps/${countryCode}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch map data');
+    }
+    const data = await response.json();
+    if (data) {
+      return { geoJsonMap: data.map };
+    } else {
+      console.log("No GeoJSON data found for the specified country code.");
         return undefined;
       }
-    }else{
-      return null
-    }
   } catch (error) {
     // Handle any exceptions that may occur during the function execution
     console.error("Error in main:", error);

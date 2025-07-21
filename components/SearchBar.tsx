@@ -4,7 +4,7 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { TbMapPinSearch } from "react-icons/tb";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const SearchBar = ({
   findCoord
@@ -14,11 +14,11 @@ export const SearchBar = ({
   const [currentUuid, setCurrentUuid] = useState("");
   const searchParams = useSearchParams()
 
+  
+  const paramsUuid = searchParams.get('coordId') 
   useEffect(() => {
-    const paramsUuid = searchParams.get('coordId') 
     if(paramsUuid != null && paramsUuid.length > 0){
       setCurrentUuid(paramsUuid)
-      findCoord(paramsUuid)
     }
   }, [searchParams])
   
